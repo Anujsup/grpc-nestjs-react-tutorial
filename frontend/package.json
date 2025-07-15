@@ -1,0 +1,62 @@
+{
+  "name": "grpc-nestjs-react-tutorial-frontend",
+  "version": "0.0.1",
+  "description": "React frontend with gRPC-Web client for learning gRPC concepts with TypeScript and Vite",
+  "author": {
+    "name": "Anuj Patil"
+  },
+  "contributors": [
+    {
+      "name": "Anuj Patil",
+      "url": "https://github.com/AnujSup"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnujSup/grpc-nestjs-react-tutorial.git",
+    "directory": "frontend"
+  },
+  "keywords": [
+    "grpc",
+    "grpc-web",
+    "react",
+    "typescript",
+    "vite",
+    "jwt",
+    "authentication",
+    "protocol-buffers",
+    "frontend"
+  ],
+  "private": true,
+
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/google-protobuf": "^3.15.12",
+    "axios": "^1.6.8",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "globals": "^13.24.0",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^7.2.0",
+    "vite": "^5.2.0"
+  }
+}

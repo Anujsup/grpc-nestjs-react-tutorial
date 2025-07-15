@@ -1,0 +1,68 @@
+{
+  "name": "grpc-nestjs-react-tutorial",
+  "version": "1.0.0",
+  "description": "🚀 Complete gRPC learning project with NestJS backend, React frontend, and MySQL database. Features JWT authentication, gRPC-Web implementation, and comprehensive documentation for beginners.",
+  "author": {
+    "name": "Anuj Patil"
+  },
+  "contributors": [
+    {
+      "name": "Anuj Patil",
+      "url": "https://github.com/AnujSup"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnujSup/grpc-nestjs-react-tutorial.git"
+  },
+  "homepage": "https://github.com/AnujSup/grpc-nestjs-react-tutorial#readme",
+  "bugs": {
+    "url": "https://github.com/AnujSup/grpc-nestjs-react-tutorial/issues"
+  },
+  "keywords": [
+    "grpc",
+    "grpc-web",
+    "nestjs",
+    "react",
+    "typescript",
+    "mysql",
+    "jwt-authentication",
+    "protocol-buffers",
+    "learning-project",
+    "tutorial",
+    "fullstack",
+    "javascript",
+    "nodejs"
+  ],
+
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run start:dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:all": "npm run build:backend && npm run build:frontend",
+    "seed:admin": "npm run seed:admin --prefix backend",
+    "seed:users": "npm run seed:users --prefix backend",
+    "lint:backend": "npm run lint --prefix backend",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:all": "npm run lint:backend && npm run lint:frontend",
+    "test:backend": "npm run test --prefix backend",
+    "test:all": "npm run test:backend"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "main": "backend/dist/main.js",
+  "directories": {
+    "doc": "./",
+    "lib": "./backend/src",
+    "test": "./backend/test"
+  }
+} 
