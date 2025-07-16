@@ -3,10 +3,21 @@ syntax = "proto3";
 package auth;
 
 service AuthService {
+  // Unary RPC (existing)
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc GetProfile (GetProfileRequest) returns (GetProfileResponse);
+  
+  // Server-side streaming - Server sends multiple messages to client
+  rpc StreamNotifications (StreamNotificationsRequest) returns (stream NotificationMessage);
+  
+  // Client-side streaming - Client sends multiple messages to server
+  rpc SendMessages (stream ClientMessage) returns (ClientMessagesResponse);
+  
+  // Bidirectional streaming - Both send multiple messages
+  rpc ChatStream (stream ChatMessage) returns (stream ChatMessage);
 }
 
+// Existing messages
 message LoginRequest {
   string username = 1;
   string password = 2;
@@ -28,4 +39,38 @@ message User {
   int32 id = 1;
   string username = 2;
   string email = 3;
+}
+
+// New streaming messages
+message StreamNotificationsRequest {
+  string access_token = 1;
+  int32 duration_seconds = 2; // How long to stream
+}
+
+message NotificationMessage {
+  string id = 1;
+  string title = 2;
+  string message = 3;
+  string timestamp = 4;
+  string type = 5; // "info", "warning", "success", "error"
+}
+
+message ClientMessage {
+  string access_token = 1;
+  string message = 2;
+  string timestamp = 3;
+}
+
+message ClientMessagesResponse {
+  int32 total_messages = 1;
+  string status = 2;
+  repeated string processed_messages = 3;
+}
+
+message ChatMessage {
+  string access_token = 1;
+  string username = 2;
+  string message = 3;
+  string timestamp = 4;
+  string room = 5;
 } 
