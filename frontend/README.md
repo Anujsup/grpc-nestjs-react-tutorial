@@ -1,13 +1,15 @@
 # gRPC Frontend - React + TypeScript + Vite
 
-This is the frontend application for the gRPC learning project, built with React, TypeScript, and Vite. It demonstrates how to implement a gRPC client in a web browser using gRPC-Web.
+This is the frontend application for the gRPC learning project, built with React, TypeScript, and Vite. It demonstrates how to implement a gRPC client in a web browser using gRPC-Web with **complete streaming support**.
 
 ## 🏗️ Architecture
 
 This frontend provides:
 - **React Application** - Modern UI with TypeScript
 - **gRPC-Web Client** - Direct gRPC calls to backend
+- **Complete Streaming Support** - All 4 types of gRPC methods
 - **JWT Authentication** - Token-based authentication
+- **Interactive Dashboard** - Real-time streaming demos
 - **Responsive Design** - Mobile-friendly interface
 
 ## 📁 Project Structure
@@ -88,12 +90,13 @@ npm run type-check      # Run TypeScript compiler check
 
 ### gRPC Client (`grpc-client.ts`)
 
-The frontend uses a custom gRPC-Web client that communicates with the backend gRPC-Web server:
+The frontend uses a custom gRPC-Web client that communicates with the backend gRPC-Web server and supports **all 4 types of gRPC methods**:
 
 ```typescript
 export class GrpcAuthClient {
   private baseUrl = 'http://localhost:8080';
 
+  // Unary RPC
   async login(request: LoginRequest): Promise<LoginResponse> {
     const response = await fetch(`${this.baseUrl}/auth.AuthService/Login`, {
       method: 'POST',
@@ -103,29 +106,40 @@ export class GrpcAuthClient {
       },
       body: JSON.stringify(request),
     });
-
-    if (!response.ok) {
-      throw new Error(`Login failed: ${response.statusText}`);
-    }
-
     return await response.json();
   }
 
-  async getProfile(token: string): Promise<GetProfileResponse> {
-    const response = await fetch(`${this.baseUrl}/auth.AuthService/GetProfile`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/grpc-web+json',
-        'X-Grpc-Web': '1',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ access_token: token }),
+  // Server-side streaming using async generators
+  async* streamNotifications(request: StreamNotificationsRequest): AsyncGenerator<NotificationMessage> {
+    const response = await fetch(`${this.baseUrl}/auth.AuthService/StreamNotifications`, {
+      method: 'GET',
+      headers: { 'Accept': 'text/event-stream' },
     });
-
-    if (!response.ok) {
-      throw new Error(`Get profile failed: ${response.statusText}`);
+    
+    // Parse Server-Sent Events
+    const reader = response.body?.getReader();
+    for await (const notification of parseSSE(reader)) {
+      yield notification;
     }
+  }
 
+  // Client-side streaming
+  async sendMessages(messages: ClientMessage[]): Promise<ClientMessagesResponse> {
+    const response = await fetch(`${this.baseUrl}/auth.AuthService/SendMessages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/grpc-web+json' },
+      body: JSON.stringify({ messages }),
+    });
+    return await response.json();
+  }
+
+  // Bidirectional streaming (simplified for web)
+  async chatStream(message: ChatMessage): Promise<ChatMessage> {
+    const response = await fetch(`${this.baseUrl}/auth.AuthService/ChatStream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/grpc-web+json' },
+      body: JSON.stringify({ message }),
+    });
     return await response.json();
   }
 }
@@ -190,6 +204,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 ### Dashboard Page (`Dashboard.tsx`)
 - **User profile display** with gRPC-fetched data
+- **Complete streaming demonstrations**:
+  - **🔄 Server-side streaming**: Real-time notifications
+  - **📨 Client-side streaming**: Bulk message interface
+  - **💬 Bidirectional streaming**: Interactive chat
 - **Logout functionality** with token cleanup
 - **Responsive layout** for mobile devices
 - **System status** indicators
@@ -334,6 +352,25 @@ For testing the application:
 - **Password**: `admin`
 
 These credentials are displayed on the login page and created by the backend seeding script.
+
+## 🧪 Testing Streaming Methods
+
+After logging in, you can test all gRPC streaming methods:
+
+### **🔄 Server-side Streaming:**
+1. Click **"Start Notifications Stream"** in the blue section
+2. Watch **5 notifications** appear automatically (one per second)
+3. See real-time updates with timestamps
+
+### **📨 Client-side Streaming:**
+1. Add multiple messages in the green section
+2. Click **"Send Messages"** to send them all at once
+3. See the processing summary
+
+### **💬 Bidirectional Streaming:**
+1. Type messages in the yellow chat section
+2. See your message and the server's echo response
+3. Continue the conversation to see real-time interaction
 
 ---
 

@@ -172,8 +172,18 @@ syntax = "proto3";
 package auth;
 
 service AuthService {
+  // Unary RPC (request-response)
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc GetProfile (GetProfileRequest) returns (GetProfileResponse);
+  
+  // Server-side streaming (server sends multiple messages)
+  rpc StreamNotifications (StreamNotificationsRequest) returns (stream NotificationMessage);
+  
+  // Client-side streaming (client sends multiple messages)
+  rpc SendMessages (stream ClientMessage) returns (ClientMessagesResponse);
+  
+  // Bidirectional streaming (both send multiple messages)
+  rpc ChatStream (stream ChatMessage) returns (stream ChatMessage);
 }
 
 message LoginRequest {
@@ -194,25 +204,54 @@ message User {
   string updated_at = 5;
 }
 
-message GetProfileRequest {
+message StreamNotificationsRequest {
   string access_token = 1;
+  int32 duration_seconds = 2;
 }
 
-message GetProfileResponse {
-  User user = 1;
+message NotificationMessage {
+  string id = 1;
+  string title = 2;
+  string message = 3;
+  string timestamp = 4;
+  string type = 5; // "info", "warning", "success", "error"
+}
+
+message ClientMessage {
+  string access_token = 1;
+  string message = 2;
+  string timestamp = 3;
+}
+
+message ClientMessagesResponse {
+  total_messages = 1;
+  string status = 2;
+  repeated string processed_messages = 3;
+}
+
+message ChatMessage {
+  string access_token = 1;
+  string username = 2;
+  string message = 3;
+  string timestamp = 4;
+  string room = 5;
 }
 ```
 
 ### gRPC Server Implementation
 
 **Traditional gRPC Server** (`grpc.service.ts`):
-- Implements the AuthService interface
-- Handles authentication and profile retrieval
+- Implements the AuthService interface with **5 methods**
+- **Unary RPC**: Login, GetProfile (request-response)
+- **Server-side streaming**: StreamNotifications (server sends multiple messages)
+- **Client-side streaming**: SendMessages (client sends multiple messages)
+- **Bidirectional streaming**: ChatStream (both send multiple messages)
 - Runs on port 50051
 
 **gRPC-Web Server** (`grpc-web.service.ts`):
 - Bridges HTTP requests to gRPC calls
 - Handles CORS for browser clients
+- **Streaming Support**: Uses Server-Sent Events for real-time streaming
 - Runs on port 8080
 
 ## 🛠️ Development
@@ -248,9 +287,20 @@ The application includes comprehensive error handling:
 
 ### Logs
 The application provides detailed logging:
-- **gRPC calls**: Request/response logging
+- **gRPC calls**: Request/response logging for all methods
+- **Streaming operations**: Real-time streaming logs
 - **Database operations**: Query logging
 - **Authentication**: Login attempts and token validation
+
+**Streaming Logs:**
+```bash
+🔄 Server-side streaming started
+📤 Sending notification: {title: "Welcome!", message: "Welcome to gRPC streaming"}
+📨 Client-side streaming started
+📥 Received message from client: {message: "Hello"}
+💬 Bidirectional streaming (chat) started
+📤 Sending chat response: {username: "Server", message: "Echo: Hello"}
+```
 
 ### Health Checks
 Basic health check endpoint to verify service status.
